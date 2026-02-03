@@ -6,6 +6,8 @@ pub enum Error {
 	Var(std::env::VarError),
 	ParseIntError(std::num::ParseIntError),
 	Io(std::io::Error),
+	Toml(toml::de::Error),
+	ChannelDoesNotExist,
 }
 
 impl From<dotenvy::Error> for Error {
@@ -33,6 +35,13 @@ impl From<std::io::Error> for Error {
 	#[inline(always)]
 	fn from(value: std::io::Error) -> Self {
 		Self::Io(value)
+	}
+}
+
+impl From<toml::de::Error> for Error {
+	#[inline(always)]
+	fn from(value: toml::de::Error) -> Self {
+		Self::Toml(value)
 	}
 }
 
