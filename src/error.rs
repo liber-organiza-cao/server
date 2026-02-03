@@ -35,3 +35,12 @@ impl From<std::io::Error> for Error {
 		Self::Io(value)
 	}
 }
+
+impl axum::response::IntoResponse for Error {
+	fn into_response(self) -> axum::response::Response {
+		match self {
+			_ => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, "Internal error"),
+		}
+		.into_response()
+	}
+}
