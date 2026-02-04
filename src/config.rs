@@ -6,10 +6,9 @@ use std::path;
 
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 pub struct Config {
-	#[serde(default)]
 	pub title: String,
-	#[serde(default)]
 	pub channels: collections::HashSet<String>,
+	pub icon_path: path::PathBuf,
 }
 
 impl Config {

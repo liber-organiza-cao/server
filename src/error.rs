@@ -8,6 +8,7 @@ pub enum Error {
 	Io(std::io::Error),
 	Toml(toml::de::Error),
 	ChannelDoesNotExist,
+	IconNotFound,
 }
 
 impl From<dotenvy::Error> for Error {
@@ -48,6 +49,7 @@ impl From<toml::de::Error> for Error {
 impl axum::response::IntoResponse for Error {
 	fn into_response(self) -> axum::response::Response {
 		match self {
+			Self::IconNotFound => (axum::http::StatusCode::NOT_FOUND, "Icon Not Found"),
 			_ => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, "Internal error"),
 		}
 		.into_response()

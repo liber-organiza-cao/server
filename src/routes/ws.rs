@@ -13,6 +13,7 @@ pub async fn handler(app: State<app::AppState>, ws: WebSocketUpgrade) -> error::
 }
 
 async fn handle_socket(app: State<app::AppState>, mut _socket: ws::WebSocket) {
+	dbg!("foo");
 	let Ok(_channel) = app.channels.subscribe("foo") else {
 		return;
 	};
