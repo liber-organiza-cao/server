@@ -2,6 +2,8 @@ pub type Result<T, E = Error> = core::result::Result<T, E>;
 
 #[derive(Debug)]
 pub enum Error {
+	Sqlx(sqlx::error::Error),
+	MigrateError(sqlx::migrate::MigrateError),
 	Dotenv(dotenvy::Error),
 	Var(std::env::VarError),
 	ParseIntError(std::num::ParseIntError),
@@ -11,6 +13,20 @@ pub enum Error {
 	Axum(axum::Error),
 	ChannelDoesNotExist,
 	IconNotFound,
+}
+
+impl From<sqlx::error::Error> for Error {
+	#[inline(always)]
+	fn from(value: sqlx::error::Error) -> Self {
+		Self::Sqlx(value)
+	}
+}
+
+impl From<sqlx::migrate::MigrateError> for Error {
+	#[inline(always)]
+	fn from(value: sqlx::migrate::MigrateError) -> Self {
+		Self::MigrateError(value)
+	}
 }
 
 impl From<dotenvy::Error> for Error {

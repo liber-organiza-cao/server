@@ -1,5 +1,6 @@
 pub mod app;
 pub mod config;
+pub mod db;
 pub mod env;
 pub mod error;
 pub mod routes;
@@ -8,7 +9,9 @@ pub mod routes;
 async fn main() -> error::Result<()> {
 	simple_logger::init_with_level(log::Level::Info).unwrap();
 
-	let app = app::AppState::init()?;
+	let app = app::AppState::init().await?;
+
+	db::MIGRATOR.run(&app.db_pool).await?;
 
 	let listener = tokio::net::TcpListener::bind(&format!("{}:{}", app.env.server_addr, app.env.server_port)).await?;
 
