@@ -1,4 +1,4 @@
-use socketioxide::extract::*;
+use socketioxide::{extract::*, *};
 
 pub fn router() -> socketioxide::layer::SocketIoLayer {
 	let (layer, io) = socketioxide::SocketIo::new_layer();
@@ -11,6 +11,6 @@ pub fn router() -> socketioxide::layer::SocketIoLayer {
 	layer
 }
 
-async fn on_send_message(s: SocketRef, Data(content): Data<String>) {
-	let _ = s.emit("messageReceived", &content);
+async fn on_send_message(io: SocketIo, Data(content): Data<String>) {
+	let _ = io.emit("messageReceived", &content).await;
 }
