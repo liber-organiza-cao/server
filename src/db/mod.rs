@@ -1,8 +1,10 @@
 use crate::*;
 
 mod channels;
+mod messages;
 
 pub use channels::*;
+pub use messages::*;
 
 use sqlx::migrate::MigrateDatabase;
 

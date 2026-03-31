@@ -17,7 +17,7 @@ async fn main() -> error::Result<()> {
 
 	log::info!("Listening on {}:{}", app.env.server_addr, app.env.server_port);
 
-	let router = routes::get_routes().with_state(app);
+	let router = routes::get_routes(&app).with_state(app);
 
 	Ok(axum::serve(listener, router).await?)
 }
