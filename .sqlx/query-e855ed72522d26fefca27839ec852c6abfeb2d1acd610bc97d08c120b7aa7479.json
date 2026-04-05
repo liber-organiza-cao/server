@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n\t\tSELECT\n\t\t\tid, name\n\t\tFROM \n\t\t\tchannels\n\t\tORDER BY\n\t\t\tid ASC\n\t\t",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "e855ed72522d26fefca27839ec852c6abfeb2d1acd610bc97d08c120b7aa7479"
+}

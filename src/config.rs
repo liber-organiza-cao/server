@@ -1,13 +1,11 @@
 use crate::*;
 
-use std::collections;
 use std::fs;
 use std::path;
 
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 pub struct Config {
 	pub title: String,
-	pub channels: collections::HashSet<String>,
 	pub icon_path: path::PathBuf,
 }
 
