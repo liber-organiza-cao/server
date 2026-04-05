@@ -4,46 +4,14 @@ use rand::TryRng;
 use rand::rngs::SysRng;
 use sha2::Digest;
 use socketioxide::extract::*;
-use socketioxide::*;
-
-const MESSAGE_PAGE_SIZE: i64 = 32;
 
 #[derive(Debug, Clone)]
-pub enum AuthState {
+enum AuthState {
 	Authenticating { public_key: Box<[u8]>, secret: Box<[u8]> },
 	Authenticated { _public_key: Box<[u8]> },
 }
 
-pub fn router(app: &app::AppState) -> socketioxide::layer::SocketIoLayer {
-	let (layer, io) = socketioxide::SocketIo::builder().with_state(app.clone()).build_layer();
-
-	io.ns("/", on_connect);
-
-	layer
-}
-
-async fn on_connect(socket: SocketRef) {
-	log::info!("New connection: {}", socket.id);
-
-	socket.on("sendMessage", on_send_message);
-	socket.on("loadMessages", on_load_messages);
-	socket.on("requestAuthChallenge", request_auth_challenge);
-	socket.on("confirmAuthChallenge", confirm_auth_challenge);
-}
-
-async fn on_send_message(io: SocketIo, Data(content): Data<String>, State(app): State<app::AppState>) {
-	if let Ok(message) = db::create_message(&app.db_pool, &content).await {
-		let _ = io.emit("messageReceived", &message).await;
-	}
-}
-
-async fn on_load_messages(State(app): State<app::AppState>, Data(before_id): Data<Option<i64>>, ack: AckSender) {
-	let messages = db::get_messages(&app.db_pool, before_id, MESSAGE_PAGE_SIZE).await.unwrap_or_default();
-
-	let _ = ack.send(&messages);
-}
-
-async fn request_auth_challenge(socket: SocketRef, Data(public_key): Data<Box<[u8]>>, ack: AckSender) {
+pub async fn request_auth_challenge(socket: SocketRef, Data(public_key): Data<Box<[u8]>>, ack: AckSender) {
 	let secret = generate_secret();
 
 	socket.extensions.insert(AuthState::Authenticating { public_key, secret: secret.clone() });
@@ -51,7 +19,7 @@ async fn request_auth_challenge(socket: SocketRef, Data(public_key): Data<Box<[u
 	let _ = ack.send(&secret);
 }
 
-async fn confirm_auth_challenge(Data(signature): Data<Box<[u8]>>, socket: SocketRef, ack: AckSender) {
+pub async fn confirm_auth_challenge(Data(signature): Data<Box<[u8]>>, socket: SocketRef, ack: AckSender) {
 	if let Some(AuthState::Authenticating { public_key, secret }) = socket.extensions.get::<AuthState>() {
 		let valid = verify_signature(&public_key, &secret, &signature).unwrap_or(false);
 
