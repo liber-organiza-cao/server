@@ -16,8 +16,10 @@ pub fn router(app: &app::AppState) -> socketioxide::layer::SocketIoLayer {
 async fn on_connect(socket: SocketRef) {
 	log::info!("New connection: {}", socket.id);
 
+	socket.on("joinChannel", message::join_channel);
 	socket.on("sendMessage", message::on_send_message);
 	socket.on("loadMessages", message::on_load_messages);
+
 	socket.on("requestAuthChallenge", auth::request_auth_challenge);
 	socket.on("confirmAuthChallenge", auth::confirm_auth_challenge);
 }
