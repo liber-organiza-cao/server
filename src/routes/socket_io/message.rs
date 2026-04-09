@@ -8,10 +8,11 @@ const MESSAGE_PAGE_SIZE: i64 = 32;
 #[derive(Debug, Clone)]
 struct Channel(i64);
 
-pub async fn join_channel(socket: SocketRef, Data(channel_id): Data<i64>) {
+pub async fn join_channel(socket: SocketRef, Data(channel_id): Data<i64>, ack: AckSender) {
 	socket.leave_all();
 	socket.join(channel_id.to_string());
 	socket.extensions.insert(Channel(channel_id));
+	let _ = ack.send(&true);
 }
 
 pub async fn on_send_message(io: SocketIo, socket: SocketRef, Data(content): Data<String>, State(app): State<app::AppState>) {
