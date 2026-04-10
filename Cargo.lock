@@ -1637,6 +1637,7 @@ dependencies = [
  "sha2 0.11.0",
  "simple_logger",
  "socketioxide",
+ "socketioxide-core",
  "sqlx",
  "tokio",
  "toml",
