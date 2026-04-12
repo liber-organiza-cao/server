@@ -15,17 +15,19 @@ log = "0.4.29"
 simple_logger = "5.1.0"
 mime_guess = "2.0.5"
 futures-util = "0.3.31"
-uuid = { version = "1.21.0", features = ["v4"] }
+uuid = { version = "1.21.0", features = ["serde", "v4", "v7"] }
 socketioxide = { version = "0.18.2", features = ["state", "extensions"] }
 socketioxide-core = "0.17.0"
 sqlx = { version = "0.8", features = [
     "runtime-tokio",
     "tls-rustls-ring-webpki",
     "sqlite",
+    "uuid",
 ] }
 rand = { version = "0.10.0", features = ["sys_rng"] }
 secp256k1 = "0.31.1"
 sha2 = "0.11.0"
+serde_with = { version = "3.18.0", features = ["hex"] }
 
 [profile.release]
 opt-level = "z"

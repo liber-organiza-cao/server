@@ -1,24 +1,31 @@
 use crate::*;
 
+use uuid::Uuid;
+
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct Message {
-	pub id: i64,
-	pub channel_id: i64,
+	pub id: Uuid,
+	pub channel_id: Uuid,
 	pub content: String,
 }
 
-pub async fn create_message(pool: &sqlx::sqlite::SqlitePool, channel_id: i64, content: &str) -> error::Result<Message> {
+pub async fn create_message(pool: &sqlx::sqlite::SqlitePool, channel_id: Uuid, content: &str) -> error::Result<Message> {
+	let id = Uuid::now_v7();
+
 	Ok(sqlx::query_as!(
 		Message,
 		r#"
             INSERT INTO messages
-                (channel_id, content)
+                (id, channel_id, content)
             VALUES
-                (?, ?)
+                (?, ?, ?)
             RETURNING
-                id as "id!", channel_id as "channel_id!", content as "content!"
+                id as "id!: Uuid",
+                channel_id as "channel_id!: Uuid",
+                content as "content!"
             ;
         "#,
+		id,
 		channel_id,
 		content
 	)
@@ -26,11 +33,15 @@ pub async fn create_message(pool: &sqlx::sqlite::SqlitePool, channel_id: i64, co
 	.await?)
 }
 
-pub async fn get_messages(pool: &sqlx::sqlite::SqlitePool, channel_id: i64, before_id: Option<i64>, limit: i64) -> error::Result<Vec<Message>> {
+pub async fn get_messages(pool: &sqlx::sqlite::SqlitePool, channel_id: Uuid, before_id: Option<Uuid>, limit: i64) -> error::Result<Vec<Message>> {
 	Ok(sqlx::query_as!(
 		Message,
 		r#"
-            SELECT id, channel_id, content FROM (
+            SELECT
+                id as "id!: Uuid",
+                channel_id as "channel_id!: Uuid",
+                content as "content!"
+            FROM (
                 SELECT
                     id, channel_id, content
                 FROM

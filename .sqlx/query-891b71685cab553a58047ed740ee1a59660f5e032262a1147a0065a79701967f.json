@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO messages\n                (id, channel_id, content)\n            VALUES\n                (?, ?, ?)\n            RETURNING\n                id as \"id!: Uuid\",\n                channel_id as \"channel_id!: Uuid\",\n                content as \"content!\"\n            ;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "channel_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "content!",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "891b71685cab553a58047ed740ee1a59660f5e032262a1147a0065a79701967f"
+}

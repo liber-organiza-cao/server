@@ -1,3 +1,4 @@
+mod admin;
 mod auth;
 mod message;
 
@@ -19,6 +20,9 @@ async fn on_connect(socket: SocketRef) {
 	socket.on("joinChannel", message::join_channel);
 	socket.on("sendMessage", message::on_send_message);
 	socket.on("loadMessages", message::on_load_messages);
+
+	socket.on("createChannel", admin::create_channel);
+	socket.on("deleteChannel", admin::delete_channel);
 
 	socket.on("requestAuthChallenge", auth::request_auth_challenge);
 	socket.on("confirmAuthChallenge", auth::confirm_auth_challenge);

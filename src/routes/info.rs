@@ -2,10 +2,11 @@ use crate::*;
 
 use axum::extract::*;
 use axum::routing::*;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, serde::Serialize)]
 struct ChannelInfo {
-	id: i64,
+	id: Uuid,
 	name: String,
 }
 

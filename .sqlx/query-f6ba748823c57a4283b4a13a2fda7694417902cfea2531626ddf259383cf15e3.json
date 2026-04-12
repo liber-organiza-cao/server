@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT\n                id as \"id!: Uuid\",\n                channel_id as \"channel_id!: Uuid\",\n                content as \"content!\"\n            FROM (\n                SELECT\n                    id, channel_id, content\n                FROM\n                    messages\n                WHERE\n                    channel_id = ?1 AND (?2 IS NULL OR id < ?2)\n                ORDER BY\n                    id DESC\n                LIMIT\n                    ?3\n            )\n            ORDER BY id ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "channel_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "content!",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "f6ba748823c57a4283b4a13a2fda7694417902cfea2531626ddf259383cf15e3"
+}

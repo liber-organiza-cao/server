@@ -3,11 +3,13 @@ use crate::*;
 use socketioxide::extract::*;
 use socketioxide::*;
 use socketioxide_core::adapter::*;
+use uuid::Uuid;
 
 const MESSAGE_PAGE_SIZE: i64 = 32;
 
-#[derive(Debug, Clone, Copy)]
-struct ChannelIdentifier(i64);
+#[derive(Debug, Clone, Copy, serde::Deserialize, serde::Serialize)]
+#[serde(transparent)]
+pub struct ChannelIdentifier(Uuid);
 
 impl RoomParam for ChannelIdentifier {
 	type IntoIter = std::iter::Once<Room>;
@@ -17,11 +19,10 @@ impl RoomParam for ChannelIdentifier {
 	}
 }
 
-pub async fn join_channel(socket: SocketRef, Data(channel_id): Data<i64>, ack: AckSender) {
+pub async fn join_channel(socket: SocketRef, Data(channel): Data<ChannelIdentifier>, ack: AckSender) {
 	if let Some(channel) = socket.extensions.get::<ChannelIdentifier>() {
 		socket.leave(channel);
 	};
-	let channel = ChannelIdentifier(channel_id);
 
 	socket.join(channel);
 	socket.extensions.insert(channel);
@@ -40,7 +41,7 @@ pub async fn on_send_message(io: SocketIo, socket: SocketRef, Data(content): Dat
 	let _ = io.to(channel).emit("messageReceived", &message).await;
 }
 
-pub async fn on_load_messages(State(app): State<app::AppState>, socket: SocketRef, Data(before_id): Data<Option<i64>>, ack: AckSender) {
+pub async fn on_load_messages(State(app): State<app::AppState>, socket: SocketRef, Data(before_id): Data<Option<Uuid>>, ack: AckSender) {
 	let Some(channel) = socket.extensions.get::<ChannelIdentifier>() else {
 		return;
 	};
