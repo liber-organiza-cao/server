@@ -9,6 +9,11 @@ pub struct AuthenticatedData {
 	pub is_admin: bool,
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ConnectRequest {
+	pub token: String,
+}
+
 #[inline]
 pub fn is_admin(socket: &SocketRef) -> bool {
 	if let Some(AuthenticatedData { is_admin, .. }) = socket.extensions.get::<AuthenticatedData>() {
@@ -18,9 +23,9 @@ pub fn is_admin(socket: &SocketRef) -> bool {
 	}
 }
 
-pub async fn auth_middleware(app: State<app::AppState>, socket: SocketRef, Data(token): Data<String>) -> error::Result<()> {
+pub async fn auth_middleware(app: State<app::AppState>, socket: SocketRef, Data(data): Data<ConnectRequest>) -> error::Result<()> {
 	let jwt_secret = app.env.jwt_secret.as_bytes();
-	let data = crypto::decode_jwt::<routes::auth::AuthenticatedPayload>(jwt_secret, &token)?;
+	let data = crypto::decode_jwt::<routes::auth::AuthenticatedPayload>(jwt_secret, &data.token)?;
 
 	let public_key = data.public_key;
 	let is_admin = data.is_admin;
