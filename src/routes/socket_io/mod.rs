@@ -5,11 +5,12 @@ mod message;
 use crate::*;
 
 use socketioxide::extract::*;
+use socketioxide::handler::*;
 
 pub fn router(app: &app::AppState) -> socketioxide::layer::SocketIoLayer {
 	let (layer, io) = socketioxide::SocketIo::builder().with_state(app.clone()).build_layer();
 
-	io.ns("/", on_connect);
+	io.ns("/", on_connect.with(auth::auth_middleware));
 
 	layer
 }
@@ -23,7 +24,4 @@ async fn on_connect(socket: SocketRef) {
 
 	socket.on("createChannel", admin::create_channel);
 	socket.on("deleteChannel", admin::delete_channel);
-
-	socket.on("requestAuthChallenge", auth::request_auth_challenge);
-	socket.on("confirmAuthChallenge", auth::confirm_auth_challenge);
 }

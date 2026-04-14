@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub type Result<T, E = Error> = core::result::Result<T, E>;
 
 #[derive(Debug)]
@@ -8,10 +10,13 @@ pub enum Error {
 	Var(std::env::VarError),
 	ParseIntError(std::num::ParseIntError),
 	Io(std::io::Error),
+	SystemTime(std::time::SystemTimeError),
+	Jwt(jsonwebtoken::errors::Error),
 	Toml(toml::de::Error),
 	SerdeJson(serde_json::Error),
 	Axum(axum::Error),
 	Secp256k1(secp256k1::Error),
+	Unauthorized,
 	ChannelDoesNotExist,
 	IconNotFound,
 }
@@ -58,6 +63,20 @@ impl From<std::io::Error> for Error {
 	}
 }
 
+impl From<std::time::SystemTimeError> for Error {
+	#[inline(always)]
+	fn from(value: std::time::SystemTimeError) -> Self {
+		Self::SystemTime(value)
+	}
+}
+
+impl From<jsonwebtoken::errors::Error> for Error {
+	#[inline(always)]
+	fn from(value: jsonwebtoken::errors::Error) -> Self {
+		Self::Jwt(value)
+	}
+}
+
 impl From<toml::de::Error> for Error {
 	#[inline(always)]
 	fn from(value: toml::de::Error) -> Self {
@@ -89,9 +108,16 @@ impl From<secp256k1::Error> for Error {
 impl axum::response::IntoResponse for Error {
 	fn into_response(self) -> axum::response::Response {
 		match self {
+			Self::Unauthorized => (axum::http::StatusCode::UNAUTHORIZED, "Unauthorized"),
 			Self::IconNotFound => (axum::http::StatusCode::NOT_FOUND, "Icon Not Found"),
 			_ => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, "Internal error"),
 		}
 		.into_response()
+	}
+}
+
+impl fmt::Display for Error {
+	fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(formatter, "{self:?}")
 	}
 }
