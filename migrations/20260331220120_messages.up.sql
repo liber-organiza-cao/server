@@ -1,4 +1,5 @@
 -- Add up migration script here
+
 CREATE TABLE messages (
     id BLOB PRIMARY KEY NOT NULL,
     channel_id BLOB NOT NULL,
