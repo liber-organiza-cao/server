@@ -4,20 +4,32 @@ use rand::TryRng;
 use rand::rngs::SysRng;
 use sha2::Digest;
 
-pub fn generate_secret() -> [u8; 32] {
+pub type PublicKey = ed25519_dalek::VerifyingKey;
+pub type PrivateKey = ed25519_dalek::SigningKey;
+pub type Signature = ed25519_dalek::Signature;
+
+pub fn rand32() -> [u8; 32] {
 	let mut secret = [0u8; 32];
 
 	SysRng.try_fill_bytes(&mut secret).unwrap();
 
-	sha2::Sha256::digest(&secret).as_slice().try_into().unwrap()
+	secret
 }
 
-pub fn verify_signature(public_key: &[u8], secret: [u8; 32], signature: &[u8]) -> error::Result<bool> {
-	let secp = secp256k1::Secp256k1::verification_only();
+pub fn sha256(data: &[u8]) -> [u8; 32] {
+	sha2::Sha256::digest(data).as_slice().try_into().unwrap()
+}
 
-	let pub_key = secp256k1::PublicKey::from_slice(&public_key)?;
-	let signature = secp256k1::ecdsa::Signature::from_compact(&signature)?;
-	let msg = secp256k1::Message::from_digest(secret);
+pub fn verify(public_key: PublicKey, signature: Signature, sha256: [u8; 32]) -> error::Result<bool> {
+	Ok(public_key.verify_strict(&sha256, &signature).is_ok())
+}
 
-	Ok(secp.verify_ecdsa(msg, &signature, &pub_key).is_ok())
+pub fn encode_jwt<T: serde::ser::Serialize>(secret: &[u8], claims: &T) -> error::Result<String> {
+	let encoding_key = jsonwebtoken::EncodingKey::from_secret(secret);
+	Ok(jsonwebtoken::encode(&jsonwebtoken::Header::default(), claims, &encoding_key)?)
+}
+
+pub fn decode_jwt<T: serde::de::DeserializeOwned>(secret: &[u8], token: &str) -> error::Result<T> {
+	let decoding_key = jsonwebtoken::DecodingKey::from_secret(secret);
+	Ok(jsonwebtoken::decode::<T>(token, &decoding_key, &jsonwebtoken::Validation::default())?.claims)
 }

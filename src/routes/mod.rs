@@ -1,3 +1,4 @@
+mod auth;
 mod icon;
 mod info;
 mod root;
@@ -21,6 +22,7 @@ pub fn get_routes(app: &app::AppState) -> axum::Router<app::AppState> {
 		.merge(root::router())
 		.nest("/info", info::router())
 		.nest("/icon", icon::router())
+		.nest("/auth", auth::router())
 		.layer(socket_io::router(app))
 		.layer(cors)
 		.layer(body_limit)

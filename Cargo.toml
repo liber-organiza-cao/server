@@ -10,12 +10,12 @@ axum = { version = "0.8.8", features = ["ws"] }
 dotenvy = "0.15.7"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
+serde_with = { version = "3.18.0", features = ["hex"] }
 toml = "0.9.8"
 log = "0.4.29"
 simple_logger = "5.1.0"
 mime_guess = "2.0.5"
-futures-util = "0.3.31"
-uuid = { version = "1.21.0", features = ["serde", "v4", "v7"] }
+uuid = { version = "1.21.0", features = ["serde", "v7"] }
 socketioxide = { version = "0.18.2", features = ["state", "extensions"] }
 socketioxide-core = "0.17.0"
 sqlx = { version = "0.8", features = [
@@ -25,9 +25,9 @@ sqlx = { version = "0.8", features = [
     "uuid",
 ] }
 rand = { version = "0.10.0", features = ["sys_rng"] }
-secp256k1 = "0.31.1"
+ed25519-dalek = { version = "3.0.0-pre.6", features = ["serde"] }
 sha2 = "0.11.0"
-serde_with = { version = "3.18.0", features = ["hex"] }
+jsonwebtoken = "9.3.1"
 
 [profile.release]
 opt-level = "z"

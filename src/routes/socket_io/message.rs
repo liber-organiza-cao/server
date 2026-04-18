@@ -30,7 +30,7 @@ pub async fn join_channel(socket: SocketRef, Data(channel): Data<ChannelIdentifi
 	let _ = ack.send(&true);
 }
 
-pub async fn on_send_message(io: SocketIo, socket: SocketRef, Data(content): Data<String>, State(app): State<app::AppState>) {
+pub async fn send_message(io: SocketIo, socket: SocketRef, Data(content): Data<String>, State(app): State<app::AppState>) {
 	let Some(channel) = socket.extensions.get::<ChannelIdentifier>() else {
 		return;
 	};
@@ -41,7 +41,7 @@ pub async fn on_send_message(io: SocketIo, socket: SocketRef, Data(content): Dat
 	let _ = io.to(channel).emit("messageReceived", &message).await;
 }
 
-pub async fn on_load_messages(State(app): State<app::AppState>, socket: SocketRef, Data(before_id): Data<Option<Uuid>>, ack: AckSender) {
+pub async fn load_messages(State(app): State<app::AppState>, socket: SocketRef, Data(before_id): Data<Option<Uuid>>, ack: AckSender) {
 	let Some(channel) = socket.extensions.get::<ChannelIdentifier>() else {
 		return;
 	};
