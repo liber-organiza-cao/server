@@ -67,7 +67,7 @@ async fn confirm_challenge(app: State<app::AppState>, Json(payload): Json<Reques
 	let challenge_payload = crypto::decode_jwt::<ChallengePayload>(app.env.jwt_challenge_secret.as_bytes(), &token)?;
 	let public_key = challenge_payload.public_key;
 
-	let valid = crypto::verify_ecdsa(public_key, signature, token_hash).unwrap_or(false);
+	let valid = crypto::verify(public_key, signature, token_hash).unwrap_or(false);
 
 	if !valid {
 		return Err(error::Error::Unauthorized);

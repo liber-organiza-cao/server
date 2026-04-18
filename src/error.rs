@@ -15,7 +15,6 @@ pub enum Error {
 	Toml(toml::de::Error),
 	SerdeJson(serde_json::Error),
 	Axum(axum::Error),
-	Secp256k1(secp256k1::Error),
 	Unauthorized,
 	ChannelDoesNotExist,
 	IconNotFound,
@@ -95,13 +94,6 @@ impl From<axum::Error> for Error {
 	#[inline(always)]
 	fn from(value: axum::Error) -> Self {
 		Self::Axum(value)
-	}
-}
-
-impl From<secp256k1::Error> for Error {
-	#[inline(always)]
-	fn from(value: secp256k1::Error) -> Self {
-		Self::Secp256k1(value)
 	}
 }
 

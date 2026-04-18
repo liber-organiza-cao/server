@@ -4,8 +4,9 @@ use rand::TryRng;
 use rand::rngs::SysRng;
 use sha2::Digest;
 
-pub type PublicKey = secp256k1::PublicKey;
-pub type Signature = secp256k1::ecdsa::Signature;
+pub type PublicKey = ed25519_dalek::VerifyingKey;
+pub type PrivateKey = ed25519_dalek::SigningKey;
+pub type Signature = ed25519_dalek::Signature;
 
 pub fn rand32() -> [u8; 32] {
 	let mut secret = [0u8; 32];
@@ -19,11 +20,8 @@ pub fn sha256(data: &[u8]) -> [u8; 32] {
 	sha2::Sha256::digest(data).as_slice().try_into().unwrap()
 }
 
-pub fn verify_ecdsa(public_key: PublicKey, signature: Signature, sha256: [u8; 32]) -> error::Result<bool> {
-	let secp = secp256k1::Secp256k1::verification_only();
-	let msg = secp256k1::Message::from_digest(sha256);
-
-	Ok(secp.verify_ecdsa(msg, &signature, &public_key).is_ok())
+pub fn verify(public_key: PublicKey, signature: Signature, sha256: [u8; 32]) -> error::Result<bool> {
+	Ok(public_key.verify_strict(&sha256, &signature).is_ok())
 }
 
 pub fn encode_jwt<T: serde::ser::Serialize>(secret: &[u8], claims: &T) -> error::Result<String> {
