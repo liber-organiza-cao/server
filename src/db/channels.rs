@@ -61,3 +61,21 @@ pub async fn get_channels(pool: &sqlx::sqlite::SqlitePool) -> error::Result<Vec<
 	.fetch_all(pool)
 	.await?)
 }
+
+pub async fn get_channel(pool: &sqlx::sqlite::SqlitePool, id: Uuid) -> error::Result<Channel> {
+	Ok(sqlx::query_as!(
+		Channel,
+		r#"
+			SELECT
+				id as "id!: Uuid",
+				name
+			FROM 
+				channels
+			WHERE
+				id = ?
+		;"#,
+		id,
+	)
+	.fetch_one(pool)
+	.await?)
+}

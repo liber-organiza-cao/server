@@ -1,8 +1,7 @@
-mod auth;
 mod icon;
 mod info;
 mod root;
-mod socket_io;
+mod ws;
 
 use axum::extract::*;
 
@@ -10,7 +9,7 @@ use crate::*;
 
 const BODY_MAX_SIZE: usize = 1024 * 1024 * 5; // 5 MB
 
-pub fn get_routes(app: &app::AppState) -> axum::Router<app::AppState> {
+pub async fn get_routes(app: &app::AppState) -> axum::Router<app::AppState> {
 	let cors = tower_http::cors::CorsLayer::new()
 		.allow_headers(tower_http::cors::Any)
 		.allow_origin(tower_http::cors::Any)
@@ -22,8 +21,7 @@ pub fn get_routes(app: &app::AppState) -> axum::Router<app::AppState> {
 		.merge(root::router())
 		.nest("/info", info::router())
 		.nest("/icon", icon::router())
-		.nest("/auth", auth::router())
-		.layer(socket_io::router(app))
+		.route("/ws", ws::router(app))
 		.layer(cors)
 		.layer(body_limit)
 }
