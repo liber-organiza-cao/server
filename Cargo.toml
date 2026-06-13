@@ -16,8 +16,6 @@ log = "0.4.29"
 simple_logger = "5.1.0"
 mime_guess = "2.0.5"
 uuid = { version = "1.21.0", features = ["serde", "v7"] }
-socketioxide = { version = "0.18.2", features = ["state", "extensions"] }
-socketioxide-core = "0.17.0"
 sqlx = { version = "0.8", features = [
     "runtime-tokio",
     "tls-rustls-ring-webpki",
@@ -28,6 +26,7 @@ rand = { version = "0.10.0", features = ["sys_rng"] }
 ed25519-dalek = { version = "3.0.0-pre.6", features = ["serde"] }
 sha2 = "0.11.0"
 jsonwebtoken = "9.3.1"
+wspc = "0.2.0"
 
 [profile.release]
 opt-level = "z"

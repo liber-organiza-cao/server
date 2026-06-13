@@ -2,7 +2,7 @@ use std::fmt;
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;
 
-#[derive(Debug)]
+#[derive(Debug, wspc::IntoErrorResponse)]
 pub enum Error {
 	Sqlx(sqlx::error::Error),
 	MigrateError(sqlx::migrate::MigrateError),
@@ -15,8 +15,10 @@ pub enum Error {
 	Toml(toml::de::Error),
 	SerdeJson(serde_json::Error),
 	Axum(axum::Error),
+	Wspc(wspc::Error),
 	Unauthorized,
 	ChannelDoesNotExist,
+	NotInChannel,
 	IconNotFound,
 }
 
@@ -94,6 +96,13 @@ impl From<axum::Error> for Error {
 	#[inline(always)]
 	fn from(value: axum::Error) -> Self {
 		Self::Axum(value)
+	}
+}
+
+impl From<wspc::Error> for Error {
+	#[inline(always)]
+	fn from(value: wspc::Error) -> Self {
+		Self::Wspc(value)
 	}
 }
 
