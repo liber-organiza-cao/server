@@ -1,5 +1,5 @@
-mod admin;
 mod auth;
+mod channel;
 mod life_cycle;
 mod message;
 
@@ -18,12 +18,13 @@ pub fn router(state: &app::AppState) -> MethodRouter<app::AppState> {
 	app.on("requestChallenge", auth::request_challenge);
 	app.on("confirmChallenge", auth::confirm_challenge);
 
-	app.on("joinChannel", message::join_channel);
 	app.on("sendMessage", message::send_message);
 	app.on("loadMessages", message::load_messages);
 
-	app.on("createChannel", admin::create_channel);
-	app.on("deleteChannel", admin::delete_channel);
+	app.on("joinChannel", channel::join_channel);
+	app.on("createChannel", channel::create_channel);
+	app.on("deleteChannel", channel::delete_channel);
+	app.on("listChannels", channel::list_channels);
 
 	route
 }
