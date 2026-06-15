@@ -11,7 +11,7 @@ pub struct Config {
 	pub title: String,
 	pub icon_path: path::PathBuf,
 	#[serde_as(as = "Vec<serde_with::hex::Hex>")]
-	pub admin_public_keys: Vec<[u8; 33]>,
+	pub admin_public_keys: Vec<[u8; 32]>,
 }
 
 impl Config {
