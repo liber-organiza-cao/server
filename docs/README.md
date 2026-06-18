@@ -31,4 +31,9 @@ sqlx migrate run
 cargo sqlx prepare
 ```
 
+### generate Ed25519 key
+```sh
+openssl genpkey -algorithm Ed25519 -outform DER | tail -c 32 | xxd -p -c 32
+```
+
 Dual-licensed under [MIT](../LICENSE-MIT) or the [UNLICENSE](../UNLICENSE).

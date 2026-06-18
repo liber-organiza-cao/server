@@ -13,6 +13,7 @@ pub enum Error {
 	SystemTime(std::time::SystemTimeError),
 	Jwt(jsonwebtoken::errors::Error),
 	Toml(toml::de::Error),
+	FromHexError(hex::FromHexError),
 	SerdeJson(serde_json::Error),
 	Axum(axum::Error),
 	Wspc(wspc::Error),
@@ -82,6 +83,13 @@ impl From<toml::de::Error> for Error {
 	#[inline(always)]
 	fn from(value: toml::de::Error) -> Self {
 		Self::Toml(value)
+	}
+}
+
+impl From<hex::FromHexError> for Error {
+	#[inline(always)]
+	fn from(value: hex::FromHexError) -> Self {
+		Self::FromHexError(value)
 	}
 }
 

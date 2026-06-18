@@ -12,6 +12,8 @@ pub struct Env {
 	pub jwt_expiration_seconds: u64,
 	pub jwt_challenge_secret: String,
 	pub jwt_challenge_expiration_seconds: u64,
+	pub private_key: crypto::PrivateKey,
+	pub public_key: crypto::PublicKey,
 }
 
 impl Env {
@@ -23,10 +25,14 @@ impl Env {
 
 		let config_path = env::var("CONFIG_PATH")?;
 		let database_url = env::var("DATABASE_URL")?;
+
 		let jwt_secret = env::var("JWT_SECRET")?;
 		let jwt_expiration_seconds = env::var("JWT_EXPIRATION_SECONDS")?.parse()?;
 		let jwt_challenge_secret = env::var("JWT_CHALLENGE_SECRET")?;
 		let jwt_challenge_expiration_seconds = env::var("JWT_CHALLENGE_EXPIRATION_SECONDS")?.parse()?;
+
+		let private_key = crypto::PrivateKey::from_bytes(hex::FromHex::from_hex(env::var("PRIVATE_KEY")?)?);
+		let public_key = private_key.public_key();
 
 		Ok(Self {
 			server_addr,
@@ -37,6 +43,8 @@ impl Env {
 			jwt_expiration_seconds,
 			jwt_challenge_secret,
 			jwt_challenge_expiration_seconds,
+			private_key,
+			public_key,
 		})
 	}
 }
