@@ -4,13 +4,13 @@ use rand::TryRng;
 use rand::rngs::SysRng;
 use sha2::Digest;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct PublicKey(ed25519_dalek::VerifyingKey);
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct PrivateKey(ed25519_dalek::SigningKey);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Signature(ed25519_dalek::Signature);
 
 pub fn rand32() -> [u8; 32] {
@@ -50,6 +50,10 @@ impl PrivateKey {
 	#[inline(always)]
 	pub fn from_bytes(bytes: [u8; 32]) -> Self {
 		Self(ed25519_dalek::SigningKey::from_bytes(&bytes))
+	}
+	#[inline(always)]
+	pub fn to_bytes(&self) -> [u8; 32] {
+		self.0.to_bytes()
 	}
 	#[inline(always)]
 	pub fn public_key(&self) -> PublicKey {
@@ -92,5 +96,23 @@ impl<'de> serde::Deserialize<'de> for Signature {
 			.map_err(|_| serde::de::Error::custom("invalid signature"))?;
 
 		Ok(Self(ed25519_dalek::Signature::from_bytes(&bytes)))
+	}
+}
+
+impl std::fmt::Debug for PublicKey {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.write_str(&base32::encode(base32::Alphabet::Z, &self.0.to_bytes()))
+	}
+}
+
+impl std::fmt::Debug for PrivateKey {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.write_str(&base32::encode(base32::Alphabet::Z, &self.0.to_bytes()))
+	}
+}
+
+impl std::fmt::Debug for Signature {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.write_str(&base32::encode(base32::Alphabet::Z, &self.0.to_bytes()))
 	}
 }

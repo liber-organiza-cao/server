@@ -1,6 +1,7 @@
 use crate::*;
 
 use std::fs;
+use std::net;
 use std::path;
 
 const DEFAULT_CONFIG: &str = include_str!("../config.toml");
@@ -12,6 +13,10 @@ pub struct Config {
 	pub icon_path: path::PathBuf,
 	#[serde_as(as = "Vec<serde_with::hex::Hex>")]
 	pub admin_public_keys: Vec<[u8; 32]>,
+
+	pub public_https_address: String,
+	pub public_ipv4_address: net::Ipv4Addr,
+	pub public_ipv6_address: net::Ipv6Addr,
 }
 
 impl Config {

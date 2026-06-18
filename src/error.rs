@@ -17,6 +17,10 @@ pub enum Error {
 	SerdeJson(serde_json::Error),
 	Axum(axum::Error),
 	Wspc(wspc::Error),
+	PkarrPublishError(pkarr::errors::PublishError),
+	PkarrBuildError(pkarr::errors::BuildError),
+	PkarrSignedPacketBuildError(pkarr::errors::SignedPacketBuildError),
+	PkarrSimpleDnsError(pkarr::dns::SimpleDnsError),
 	Unauthorized,
 	ChannelDoesNotExist,
 	NotInChannel,
@@ -111,6 +115,34 @@ impl From<wspc::Error> for Error {
 	#[inline(always)]
 	fn from(value: wspc::Error) -> Self {
 		Self::Wspc(value)
+	}
+}
+
+impl From<pkarr::errors::PublishError> for Error {
+	#[inline(always)]
+	fn from(value: pkarr::errors::PublishError) -> Self {
+		Self::PkarrPublishError(value)
+	}
+}
+
+impl From<pkarr::errors::BuildError> for Error {
+	#[inline(always)]
+	fn from(value: pkarr::errors::BuildError) -> Self {
+		Self::PkarrBuildError(value)
+	}
+}
+
+impl From<pkarr::errors::SignedPacketBuildError> for Error {
+	#[inline(always)]
+	fn from(value: pkarr::errors::SignedPacketBuildError) -> Self {
+		Self::PkarrSignedPacketBuildError(value)
+	}
+}
+
+impl From<pkarr::dns::SimpleDnsError> for Error {
+	#[inline(always)]
+	fn from(value: pkarr::dns::SimpleDnsError) -> Self {
+		Self::PkarrSimpleDnsError(value)
 	}
 }
 
