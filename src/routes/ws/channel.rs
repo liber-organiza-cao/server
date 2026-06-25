@@ -31,51 +31,50 @@ pub struct JoinChannelParams {
 #[serde(transparent)]
 pub struct ChannelIdentifier(pub Uuid);
 
-pub async fn create_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<CreateChannelParams>) -> error::Result<()> {
+pub async fn create_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<CreateChannelParams>) -> error::Result<Channel> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
 	if !auth::is_admin(&socket) {
 		return Err(error::Error::Unauthorized);
 	}
 
-	let channel = db::create_channel(&state.db_pool, &params.name).await?;
+	let channel: Channel = db::create_channel(&state.db_pool, &params.name).await?.into();
 
-	app.room("events").emit("channelCreated", (channel,))?;
+	app.room("events").emit("channelCreated", (&channel,))?;
 
-	Ok(())
+	Ok(channel)
 }
 
-pub async fn delete_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<DeleteChannelParams>) -> error::Result<()> {
+pub async fn delete_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<DeleteChannelParams>) -> error::Result<Channel> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
 	if !auth::is_admin(&socket) {
 		return Err(error::Error::Unauthorized);
 	}
 
-	db::delete_channel(&state.db_pool, params.channel_id).await?;
+	let channel: Channel = db::delete_channel(&state.db_pool, params.channel_id).await?.into();
 
-	app.room("events").emit("channelDeleted", (params.channel_id,))?;
+	app.room("events").emit("channelDeleted", (&channel,))?;
 
-	Ok(())
+	Ok(channel)
 }
 
 pub async fn list_channels(app: wspc::App) -> error::Result<Vec<Channel>> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
-	let db_channels = db::get_channels(&state.db_pool).await?;
-	let channels = db_channels.into_iter().map(|c| Channel { id: c.id, name: c.name }).collect();
+	let channels = db::get_channels(&state.db_pool).await?.into_iter().map(Into::into).collect();
 
 	Ok(channels)
 }
 
-pub async fn join_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<JoinChannelParams>) -> error::Result<db::Channel> {
+pub async fn join_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<JoinChannelParams>) -> error::Result<Channel> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
 	if !auth::is_auth(&socket) {
 		return Err(error::Error::Unauthorized);
 	}
 
-	let channel = db::get_channel(&state.db_pool, *params.channel_id).await?;
+	let channel = db::get_channel(&state.db_pool, *params.channel_id).await?.into();
 
 	if let Some(channel) = socket.get_state::<ChannelIdentifier>() {
 		socket.leave(channel)?;
@@ -99,5 +98,12 @@ impl ops::Deref for ChannelIdentifier {
 	#[inline]
 	fn deref(&self) -> &Self::Target {
 		&self.0
+	}
+}
+
+impl From<db::Channel> for Channel {
+	#[inline(always)]
+	fn from(value: db::Channel) -> Self {
+		Self { id: value.id, name: value.name }
 	}
 }

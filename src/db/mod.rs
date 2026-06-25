@@ -1,9 +1,13 @@
 use crate::*;
 
+mod attachments;
 mod channels;
+mod files;
 mod messages;
 
+pub use attachments::*;
 pub use channels::*;
+pub use files::*;
 pub use messages::*;
 
 use sqlx::migrate::MigrateDatabase;
