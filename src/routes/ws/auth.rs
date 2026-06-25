@@ -102,7 +102,7 @@ pub async fn confirm_challenge(app: wspc::App, params: wspc::Params<ConfirmAuthC
 	let challenge_payload = crypto::decode_jwt::<ChallengePayload>(state.env.jwt_challenge_secret.as_bytes(), token)?;
 	let public_key = challenge_payload.public_key;
 
-	let valid = public_key.verify(token_hash, signature);
+	let valid = public_key.verify(&*token_hash, signature);
 
 	if !valid {
 		return Err(error::Error::Unauthorized);

@@ -1,4 +1,5 @@
 /target
+files/
 .env*
 !.env*.example
 
