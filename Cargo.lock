@@ -3903,9 +3903,9 @@ checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
 
 [[package]]
 name = "wspc"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3708cdef2bc4e6d82ccfe1ae302279e97e8f09e340bdbcdbc43dacab5353601d"
+checksum = "52149ab1ab4038aa8a5352d94d3415efa7c151dc91d2402cb1a66c2157ed3451"
 dependencies = [
  "axum",
  "dashmap",
